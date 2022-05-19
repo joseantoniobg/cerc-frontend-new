@@ -1,0 +1,24 @@
+@import "variables";
+
+.menu {
+  background-color: rgb(45, 45, 45);
+}
+
+.main {
+  width: 100%;
+  display: flex;
+  min-height: 100vh;
+}
+
+.content {
+  width: 100%;
+  background-color: rgb(224, 224, 224);
+}
+
+.contentInner {
+  display: block;
+  border-radius: 1rem;
+  margin: 1rem;
+  background-color: $color-white;
+  padding: 1rem;
+}

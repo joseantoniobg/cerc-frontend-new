@@ -1,8 +1,10 @@
-import '../styles/globals.css'
+import '../styles/globals.scss'
 import type { AppProps } from 'next/app'
+import { UserProvider } from '../context/UserContext';
+import 'antd/dist/antd.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
+  return <UserProvider><Component {...pageProps} /></UserProvider>
 }
 
 export default MyApp
