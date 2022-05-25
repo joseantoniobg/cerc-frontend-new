@@ -30,5 +30,15 @@ export const nextApi = axios.create({
 
 export const authorizedRequest = async (token: string, config: AxiosRequestConfig) => {
   config = { ...config, headers: { ...config.headers, Authorization: `Bearer ${token}` } }
-  return await api.request(config);
+  try {
+    const resp = await api.request(config);
+    return resp;
+  } catch (e) {
+    console.log(e);
+    if (e.code === 401) {
+
+    } else {
+      throw e;
+    }
+  }
 }

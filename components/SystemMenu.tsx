@@ -7,9 +7,12 @@ import {  Menu, Button  } from 'antd';
 import styles from '../styles/SystemMenu.module.scss';
 import { useAuth } from '../context/UserContext';
 import { useRouter } from 'next/router';
+import { hasRole } from '../utils/utils';
+import Header from './Header';
 
-function getItem(label, key, icon?, onClick?) {
+function getItem(role, label, key, icon?, onClick?) {
   return {
+    role,
     key,
     icon,
     label,
@@ -18,15 +21,15 @@ function getItem(label, key, icon?, onClick?) {
   };
 }
 
-const SystemMenu = ({ children }) => {
+const SystemMenu = ({ title, children }) => {
   const [collapsed, setCollapsed] = React.useState(false);
-  const { logOut, selectedMenu, setSelectedMenu } = useAuth();
+  const { logOut, selectedMenu, setSelectedMenu, user } = useAuth();
   const router = useRouter();
 
   const items = [
-    getItem('Início', '1', null, () => { setSelectedMenu('1'); router.push('/');}),
-    getItem('Usuários', '2', <UserOutlined />, () => { setSelectedMenu('2'); router.push('/users'); }),
-    getItem('Sair', '3', <DesktopOutlined />, logOut),
+    getItem('', 'Início', '1', null, () => { setSelectedMenu('1'); router.push('/');}),
+    getItem('users', 'Usuários', '2', <UserOutlined />, () => { setSelectedMenu('2'); router.push('/users'); }),
+    getItem('', 'Sair', '3', <DesktopOutlined />, logOut),
     // getItem('Option 3', '3', <ContainerOutlined />),
     // getItem('Navigation One', 'sub1', <MailOutlined />, [
     //   getItem('Option 5', '5'),
@@ -39,7 +42,7 @@ const SystemMenu = ({ children }) => {
     //   getItem('Option 10', '10'),
     //   getItem('Submenu', 'sub3', null, [getItem('Option 11', '11'), getItem('Option 12', '12')]),
     // ]),
-  ];
+  ].filter(item => hasRole(user, item.role));
 
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
@@ -66,9 +69,12 @@ const SystemMenu = ({ children }) => {
           items={items}
         />
       </div>
-      <div className={styles.content}>
-        <div className={styles.contentInner}>
-          {children}
+      <div className={styles.mainContent}>
+        <Header title={title} />
+        <div className={styles.content}>
+          <div className={styles.contentInner}>
+            {children}
+          </div>
         </div>
       </div>
     </div>

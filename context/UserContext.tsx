@@ -34,7 +34,9 @@ export const UserProvider = ({ children }) => {
   const router = useRouter();
   const [selectedMenu, setSelectedMenu] = React.useState('1');
 
-  //useEffect(() => checkUserLoggedIn(), []);
+  useEffect(() => {
+              checkUserLoggedIn()
+            }, []);
 
   //Login user
   const logIn = async (user: { login: string; password: string }) => {
