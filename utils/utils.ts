@@ -38,7 +38,7 @@ export function getNumbersFromString(str: string): string {
 }
 
 export function hasRole(user, role: string): boolean {
-  return role === '' || user?.roles?.find(userRole => userRole.unique_key === role);
+  return role === '' || user?.roles?.find(userRole => userRole.unique_key === role) !== undefined;
 }
 
 export const valorValido = valor => {
