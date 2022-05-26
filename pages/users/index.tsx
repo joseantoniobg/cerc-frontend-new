@@ -1,7 +1,7 @@
 import React from 'react';
 import StandardPage from '../StandardPage';
 import { authorizedRequest } from '../../config';
-import { parseCookies, normalizeParams, formatarCpf } from '../../utils/utils';
+import { parseCookies, normalizeParams, formatarCpf, hasRole } from '../../utils/utils';
 import { useAuth } from '../../context/UserContext';
 import { Button, Table, Tag } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
@@ -42,7 +42,7 @@ const Users = ({ users, token }) => {
     { title: 'Login', dataindex: 'login', key: '5' },
     { title: 'Ativo', dataindex: 'status', key: '6',
       render: (text, record) => <Tag color={record.status === 1 ? 'green' : 'red'}>{record.status === 1 ? 'SIM' : 'NÃO'}</Tag> },
-    { title: 'Ações', key: '7', fixed: 'right', width: 80, render: (text) => <Button icon={<EditOutlined />} onClick={() => history.push(`/users/${text.id_user}`)} /> }
+    { title: 'Ações', key: '7', fixed: 'right', width: 80, render: (text) => <Button icon={<EditOutlined />} onClick={() => history.push(`/users/${text.id_user}`)} disabled={!hasRole(user, 'alterUser')} />}
   ]
 
   return  <StandardPage role='users' title='Usuários'>

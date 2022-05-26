@@ -2,20 +2,24 @@ import React from 'react';
 import StandardPage from '../StandardPage';
 import { authorizedRequest } from '../../config/index';
 import { parseCookies, msgSuccess, msgError, formatarCpf } from '../../utils/utils';
-import { Form, Row, Input, Button } from 'antd';
+import { Form, Row, Input, Button, Divider } from 'antd';
 import ColAntd from '../../components/ColAntd';
 import { MaskedInput } from 'antd-mask-input';
 import Container from '../../components/Container';
+import Title from 'antd/lib/skeleton/Title';
+import Subtitle from '../../components/Subtitle';
+import List from '../../components/List';
 
-const UserPage = ({ id, user, token }) => {
+const UserPage = ({ id, user, roles, token }) => {
   const [loadingSaveUser, setLoadingSaveUser] = React.useState(false);
+  const [selectedRoles, setSelectedRoles] = React.useState(user.roles.map(r => r.id_role))
 
   const saveUser = async (form) => {
     setLoadingSaveUser(true);
 
     const newUser = user?.id_user === undefined;
 
-    user = { ...user, ...form, document: formatarCpf(form.document) };
+    user = { ...user, ...form, document: formatarCpf(form.document), roles: selectedRoles.map(r => ({ id_role: r })) };
 
     try {
       const resp = await authorizedRequest(token, {
@@ -36,6 +40,7 @@ const UserPage = ({ id, user, token }) => {
   return <StandardPage title={id === '0' ? 'Cadastrar Usuário' : 'Editar Usuário'} role={'alterUser'}>
       <Form layout='vertical' onFinish={saveUser} initialValues={user}>
       <Container>
+      <Subtitle>Dados Básicos</Subtitle>
       <Row gutter={16}>
           <ColAntd md={6} lg={6}>
             <Form.Item
@@ -72,8 +77,20 @@ const UserPage = ({ id, user, token }) => {
                 label={<span>CPF</span>}
                 rules={[{required: true, message: 'Por favor, informe um nome'}]}
               >
-                <MaskedInput mask={"000.000.000-00"} size='large' placeholder='José Antônio' />
+                <MaskedInput mask={"000.000.000-00"} size='large' placeholder='123.456.789-00' />
             </Form.Item>
+          </ColAntd>
+        </Row>
+        <Subtitle>Permissões</Subtitle>
+        <Row gutter={16}>
+          <ColAntd md={12} lg={12}>
+            <List
+               title='Permissões'
+               subtitle='Permissões Liberadas'
+               data={roles.map(r => ({ key: r.id_role, title: r.description }))}
+               targetKeys={selectedRoles}
+               setTargetKeys={setSelectedRoles}
+            />
           </ColAntd>
         </Row>
         </Container>
@@ -99,16 +116,23 @@ export const getServerSideProps = async ({ params: {id}, req }) => {
   const {token} = parseCookies(req);
 
   let user = {};
+  let roles = [];
 
   if (id !== '0') {
-    const resp = await authorizedRequest(token, {
+    const us = await authorizedRequest(token, {
       url: `/users/id/${id}`,
     });
-    user = resp?.data;
+
+    const rol = await authorizedRequest(token, {
+      url: `users/allRoles`
+    });
+
+    user = us?.data;
+    roles = rol?.data;
   }
 
   return {
-    props: { id, user: user, token }
+    props: { id, user, roles, token }
   }
 }
 
